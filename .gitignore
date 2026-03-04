@@ -49,3 +49,7 @@ logs
 # OS
 .DS_Store
 Thumbs.db
+
+# DB
+table_creation/
+migrate.js

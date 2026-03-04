@@ -1,8 +1,8 @@
-import { config } from "dotenv";
+import dotenv from "dotenv";
 import { Pool } from "pg";
 
-config();
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGSSLMODE } = process.env;
+dotenv.config();
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const DB = new Pool({
   host: PGHOST,
@@ -10,21 +10,31 @@ const DB = new Pool({
   user: PGUSER,
   password: PGPASSWORD,
   port: 5432,
-  ssl: { require: true },
+  ssl: { require: true, rejectUnauthorized: false },
 });
 
 const connectDB = async () => {
+  let client = null;
   try {
-    await DB.connect();
+    client = await DB.connect();
     console.log(`Connection Success!`);
-  } catch (e) {
-    console.error(`Error on Connecting DB : ${e.message}`);
+  } catch (err) {
+    if (err.name === "AggregateError") {
+      console.error("AggregateError details:");
+      err.errors.forEach((e, i) => console.error(`Error ${i}:`, e));
+    } else {
+      console.error("Connection error:", err);
+    }
     process.exit(1);
+  } finally {
+    client.release();
   }
 };
 
 const disconnectDB = async () => {
+  console.log("Disconnecting");
   await DB.end();
+  console.log("Disconnected");
 };
 
 export { DB, connectDB, disconnectDB };

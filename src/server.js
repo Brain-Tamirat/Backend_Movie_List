@@ -8,11 +8,52 @@ config();
 const app = express();
 const port = process.env.PORT || 9005;
 
+//Using CORS for cross origin resource sharing
 app.use(cors());
+//Changing incoming data to json format
 app.use(express.json());
 
+//Checking For Connection
+await connectDB();
+await disconnectDB();
+
+// Movie Route
 app.use("/api/movies", movie_router);
 
-app.listen(port, () => {
+//Listening Here
+const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
+});
+
+// UnhandledRejection handled e.g. DB-Connection Errors
+process.on("unhandledRejection", async (err) => {
+  console.log("UnhandledRejection : " + err);
+  server.close(async () => {
+    console.log("Disconnecting");
+    await disconnectDB();
+    console.log("Disconnected");
+    process.exit(1);
+  });
+});
+
+//UncaughtException handled
+process.on("uncaughtException", async (err) => {
+  console.log("UncaughtException : " + err);
+  server.close(async () => {
+    console.log("Disconnecting");
+    await disconnectDB();
+    console.log("Disconnected");
+    process.exit(1);
+  });
+});
+
+//Grace FUll Shutdown
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM initaited Shutting Down Gracefully!");
+  server.close(async () => {
+    console.log("Disconnecting");
+    await disconnectDB();
+    console.log("Disconnected");
+    process.exit(1);
+  });
 });
