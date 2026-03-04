@@ -3,13 +3,12 @@ import express from "express";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  console.log(req.cookies);
   res.json({ end: "Movies", count: 221 });
 });
 
 router.get("/:id", (req, res) => {
   console.log(req.params.id);
-  const [_, id] = req.params.id.split("=");
+  const id = req.params.id;
   res.json({ end: "Movie", name: `Movie ${id}` });
 });
 

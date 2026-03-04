@@ -2,7 +2,8 @@ import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
 import { connectDB, disconnectDB } from "../config/db.js";
-import movie_router from "../routes/movies.js";
+import auth_router from "../routes/auth_routes.js";
+import movie_router from "../routes/movies_routes.js";
 
 config();
 const app = express();
@@ -14,8 +15,11 @@ app.use(cors());
 app.use(express.json());
 
 //Checking For Connection
-await connectDB();
-await disconnectDB();
+// await connectDB();
+// await disconnectDB();
+
+//Auth Route
+app.use("/api/auth", auth_router);
 
 // Movie Route
 app.use("/api/movies", movie_router);
