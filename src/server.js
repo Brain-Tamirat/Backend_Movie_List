@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Checking For Connection
-// await connectDB();
+await connectDB();
 // await disconnectDB();
 
 //Auth Route

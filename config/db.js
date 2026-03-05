@@ -27,7 +27,7 @@ const connectDB = async () => {
     }
     process.exit(1);
   } finally {
-    client.release();
+    if (client) client.release();
   }
 };
 

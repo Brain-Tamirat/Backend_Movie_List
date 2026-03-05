@@ -53,3 +53,4 @@ Thumbs.db
 # DB
 table_creation/
 migrate.js
+mock.js
