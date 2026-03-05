@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB, disconnectDB } from "../config/db.js";
 import auth_router from "../routes/auth_routes.js";
 import movie_router from "../routes/movies_routes.js";
+import watch_list_router from "../routes/watch_list_routes.js";
 
 config();
 const app = express();
@@ -24,6 +25,9 @@ app.use("/api/auth", auth_router);
 
 // Movie Route
 app.use("/api/movies", movie_router);
+
+//Watch List Route
+app.use("/api/watch-list", watch_list_router);
 
 //Listening Here
 const server = app.listen(port, () => {
