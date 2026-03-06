@@ -11,7 +11,7 @@ const addToWatchList = async (req, res) => {
       return res.status(401).json({ status: 0, error: "Movie Not Found!" });
     }
 
-    const user_id = movie.rows[0].created_by;
+    const user_id = req.user.id;
 
     const watched_before = await DB.query(
       `select * from watchlists where movieid=$1 and userid=$2`,
@@ -28,7 +28,7 @@ const addToWatchList = async (req, res) => {
       `insert into watchlists (userid,movieid,status,rating,notes) values
       ($1,$2,$3,$4,$5)
       returning id,userid,movieid,status,rating,notes`,
-      [user_id, movieId, status || "planned", rating, note],
+      [user_id, movieId, status || "planned", rating || 1, note],
     );
 
     const {
@@ -39,8 +39,6 @@ const addToWatchList = async (req, res) => {
       rating: gr,
       notes: gn,
     } = watched.rows[0];
-
-    console.log(watched.rows[0]);
 
     res.status(201).json({
       status: 1,
@@ -63,4 +61,29 @@ const addToWatchList = async (req, res) => {
   }
 };
 
-export { addToWatchList };
+const removeFromWatchList = async (req, res) => {
+  const del_id = req.params.id;
+  try {
+    const watchlist = await DB.query(`select * from watchlists where id=$1`, [
+      del_id,
+    ]);
+    if (watchlist.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ status: 0, error: "Watch List Movie is not found" });
+    }
+
+    if (watchlist.rows[0].userid != req.user.id) {
+      return res.status(403).json({ status: 0, error: "You Can't do that!" });
+    }
+    await DB.query(`delete from watchlists where id=$1`, [del_id]);
+    res.status(200).json({ status: 1, msg: "Deleted Successfully!" });
+  } catch (e) {
+    console.log(e);
+    res
+      .status(500)
+      .json({ status: 0, error: "Server isn't Working Come Back Later!" });
+  }
+};
+
+export { addToWatchList, removeFromWatchList };

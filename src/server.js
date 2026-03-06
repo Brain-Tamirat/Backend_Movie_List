@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { connectDB, disconnectDB } from "../config/db.js";
 import auth_router from "../routes/auth_routes.js";
 import movie_router from "../routes/movies_routes.js";
@@ -13,6 +14,7 @@ const port = process.env.PORT || 9005;
 //Using CORS for cross origin resource sharing
 app.use(cors());
 //Changing incoming data to json format and urlencoded
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
